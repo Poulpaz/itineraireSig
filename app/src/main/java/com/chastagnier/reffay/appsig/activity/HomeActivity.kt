@@ -31,18 +31,26 @@ class HomeActivity : AppCompatActivity() {
         rv_point.adapter = listAdapterPoint
         rv_arc.adapter = listAdapterArc
 
-        val dataBase = RoomAsset.databaseBuilder(this, SigDatabase::class.java, "lp_iem_sig.db").allowMainThreadQueries().build()
+        val dataBase = RoomAsset.databaseBuilder(this, SigDatabase::class.java, "lp_iem_sig.db").addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().allowMainThreadQueries().build()
 
 
         dataBase.searchStationDAO().getGeoPoint().subscribe(
-                { listAdapterPoint.submitList(it) },
-                { Log.e("TESTT", it.toString()) }
+                { listAdapterPoint.submitList(it)
+                    Log.e("TESTT", it.toString())},
+                { Log.e("TESTT2", it.toString()) }
         ).dispose()
 
         dataBase.searchStationDAO().getGeoPoint().subscribe(
-                { listAdapterArc.submitList(it) },
-                { Log.e("TESTT", it.toString()) }
+                { listAdapterArc.submitList(it)
+                    Log.e("TESTT", it.toString())},
+                { Log.e("TESTT2", it.toString()) }
         ).dispose()
 
+    }
+}
+
+val MIGRATION_1_2: Migration = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        // Since we didn't alter the table, there's nothing else to do here.
     }
 }
