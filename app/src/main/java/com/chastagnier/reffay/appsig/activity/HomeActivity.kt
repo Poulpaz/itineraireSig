@@ -1,34 +1,48 @@
 package com.chastagnier.reffay.appsig.activity
 
-import android.content.Context
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
+import android.util.Log
 import com.chastagnier.reffay.appsig.R
 import com.chastagnier.reffay.appsig.adapter.ListStationAdapter
-import com.chastagnier.reffay.appsig.dataBase.DataBaseHelper
-import com.chastagnier.reffay.appsig.model.Station
-import java.io.FileOutputStream
-import java.io.InputStream
+import com.chastagnier.reffay.appsig.dataBase.SigDatabase
+import com.chastagnier.reffay.appsig.model.GEO_POINT
+import com.huma.room_for_asset.RoomAsset
+import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.activity_home.*
+import android.arch.persistence.db.SupportSQLiteDatabase
+import android.arch.persistence.room.migration.Migration
+
+
 
 class HomeActivity : AppCompatActivity() {
 
-    lateinit var listAdapter : ListStationAdapter
-    lateinit var listStation : List<Station>
-    lateinit var DBHelper : DataBaseHelper
+    lateinit var listAdapterPoint : ListStationAdapter
+    lateinit var listAdapterArc : ListStationAdapter
+    lateinit var listStation : List<GEO_POINT>
+    protected val compositeDisposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
-    }
 
-    private fun copyDatabase() : Boolean {
-       /* try {
-            var inputStream = this.assets.open(DataBaseHelper.DB_NAME)
-            var outFileName = DataBaseHelper.DBLOCATION + DataBaseHelper.DB_NAME
-            var outputStream = FileOutputStream(outFileName)
-            var buff = ByteArray(1024)
-            var length = 0
-        }*/
+        listAdapterPoint = ListStationAdapter()
+        listAdapterArc = ListStationAdapter()
+        rv_point.adapter = listAdapterPoint
+        rv_arc.adapter = listAdapterArc
+
+        val dataBase = RoomAsset.databaseBuilder(this, SigDatabase::class.java, "lp_iem_sig.db").allowMainThreadQueries().build()
+
+
+        dataBase.searchStationDAO().getGeoPoint().subscribe(
+                { listAdapterPoint.submitList(it) },
+                { Log.e("TESTT", it.toString()) }
+        ).dispose()
+
+        dataBase.searchStationDAO().getGeoPoint().subscribe(
+                { listAdapterArc.submitList(it) },
+                { Log.e("TESTT", it.toString()) }
+        ).dispose()
+
     }
 }

@@ -7,14 +7,25 @@
     tools:context=".activity.HomeActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/fragment_story_like_recyclerview"
-        android:layout_width="match_parent"
+        android:id="@+id/rv_point"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/item_station"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/rv_arc" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_arc"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:overScrollMode="never"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_station"
+        app:layout_constraintStart_toEndOf="@id/rv_point"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
