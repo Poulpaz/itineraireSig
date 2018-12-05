@@ -11,15 +11,26 @@ import android.content.Intent
 import android.view.Menu
 import android.view.MenuItem
 import com.chastagnier.reffay.appsig.adapter.ListArcAdapter
+import com.chastagnier.reffay.appsig.model.GEO_ARC
+import com.chastagnier.reffay.appsig.model.Graph
+import com.chastagnier.reffay.appsig.utils.Dijkstra
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
 import org.kodein.di.generic.instance
+import timber.log.Timber
+
+
 
 
 class HomeActivity() : BaseActivity() {
 
-    lateinit var listAdapterPoint : ListPointAdapter
-    lateinit var listAdapterArc : ListArcAdapter
-    lateinit var listStation : List<GEO_POINT>
-    val sigDatabase : SigDatabase by instance()
+    lateinit var listAdapterPoint: ListPointAdapter
+    lateinit var listAdapterArc: ListArcAdapter
+    var listPoint: List<GEO_POINT> = mutableListOf()
+    var listArc: List<GEO_ARC> = mutableListOf()
+    val sigDatabase: SigDatabase by instance()
+    lateinit var obsListPoint: Observable<List<GEO_POINT>>
+    lateinit var obsListArc: Observable<List<GEO_ARC>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +44,39 @@ class HomeActivity() : BaseActivity() {
         rv_arc.adapter = listAdapterArc
 
         sigDatabase.searchStationDAO().getGeoPoint().subscribe(
-                { listAdapterPoint.submitList(it)
-                    Log.e("TESTT", it.toString())},
+                {
+                    listAdapterPoint.submitList(it)
+                    listPoint = it
+                    obsListPoint = Observable.just(listPoint)
+                },
                 { Log.e("TESTT2", it.toString()) }
         ).dispose()
 
         sigDatabase.searchStationDAO().getGeoArc().subscribe(
-                { listAdapterArc.submitList(it)
-                    Log.e("TESTT", it.toString())},
+                {
+                    listAdapterArc.submitList(it)
+                    listArc = it
+                    obsListArc = Observable.just(listArc)
+                },
                 { Log.e("TESTT2", it.toString()) }
         ).dispose()
+
+        Observable.combineLatest(obsListArc, obsListPoint, BiFunction<List<GEO_ARC>?, List<GEO_POINT>?, Pair<List<GEO_ARC>, List<GEO_POINT>>> { l1, l2 -> Pair(l1, l2) })
+                .subscribe(
+                        {
+                            Log.d("TESTT1", it.first.toString())
+                            Log.d("TESTT2", it.second.toString())
+                            val graph = Graph(it.second, it.first)
+                            val dijkstra = Dijkstra(graph)
+                            dijkstra.execute(listPoint.first())
+                            val path = dijkstra.getPath(listPoint.last())
+
+                            path?.forEach {
+                                Log.d("TESTTPATH", it.toString())
+                            }
+                        },
+                        { Timber.e(it) }
+                )
 
     }
 
@@ -56,7 +90,7 @@ class HomeActivity() : BaseActivity() {
 
     //gère le click sur une action de l'ActionBar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val intent: Intent
+        var intent: Intent
         when (item.itemId) {
             R.id.action_map -> {
                 intent = Intent(this@HomeActivity, MapsActivity::class.java)

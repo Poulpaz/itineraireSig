@@ -2,7 +2,10 @@ package com.chastagnier.reffay.appsig.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.chastagnier.reffay.appsig.R
+import com.chastagnier.reffay.appsig.dataBase.SigDatabase
+import com.chastagnier.reffay.appsig.model.GEO_POINT
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,10 +13,13 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import org.kodein.di.generic.instance
+import java.lang.Float.parseFloat
 
-class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
+class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
+    val sigDatabase : SigDatabase by instance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,23 +30,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.setMinZoomPreference(13.0f);
-        mMap.setMaxZoomPreference(17.0f);
+        mMap.setMinZoomPreference(12.0f);
 
         // Add a marker in Sydney and move the camera
         val bourgEnBresse = LatLng(46.202781, 5.219243)
-        mMap.addMarker(MarkerOptions().position(bourgEnBresse).title("Marker in Bourg en Bresse"))
         mMap.moveCamera(CameraUpdateFactory.newLatLng(bourgEnBresse))
+
+        sigDatabase.searchStationDAO().getGeoPoint().subscribe(
+                { addMarker(it) },
+                { Log.e("TESTT", it.toString()) }
+        ).dispose()
+    }
+
+    private fun addMarker(listPoint: List<GEO_POINT>) {
+        for (point in listPoint) {
+            mMap.addMarker(MarkerOptions()
+                    .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))
+                    .title(point.nom))
+        }
     }
 }
