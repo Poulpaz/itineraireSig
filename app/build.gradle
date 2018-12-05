@@ -59,4 +59,8 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:1.1.1"
     kapt "android.arch.persistence.room:compiler:1.1.1"
     implementation 'com.github.humazed:RoomAsset:v1.0'
+
+    // Kodein
+    implementation 'org.kodein.di:kodein-di-generic-jvm:5.3.0'
+    implementation 'org.kodein.di:kodein-di-framework-android:5.0.0'
 }

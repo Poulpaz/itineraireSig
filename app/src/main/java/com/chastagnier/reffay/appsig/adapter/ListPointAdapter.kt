@@ -11,29 +11,29 @@ import com.chastagnier.reffay.appsig.model.GEO_POINT
 import com.jakewharton.rxbinding2.view.RxView
 import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.subjects.PublishSubject
-import kotlinx.android.synthetic.main.item_station.view.*
+import kotlinx.android.synthetic.main.item_point.view.*
 
-class ListStationAdapter() : ListAdapter<GEO_POINT, ListStationAdapter.StationViewHolder>(DiffStationCallback()) {
+class ListPointAdapter() : ListAdapter<GEO_POINT, ListPointAdapter.PointViewHolder>(DiffStationCallback()) {
 
-    override fun onBindViewHolder(holder: StationViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PointViewHolder, position: Int) {
         holder.bind(getItem(position))
     }
 
     val indexClickLike: PublishSubject<Int> = PublishSubject.create()
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StationViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_station, parent, false)
-        return StationViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PointViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_point, parent, false)
+        return PointViewHolder(view)
     }
 
-    inner class StationViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PointViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(station: GEO_POINT) {
-            itemView.item_station_id.text = station.id.toString()
-            itemView.item_station_latitude.text = station.latitude.toString()
-            itemView.item_station_longitude.text = station.longitude.toString()
-            itemView.item_station_name.text = station.nom
-            itemView.item_station_partition.text = station.partition.toString()
+            itemView.item_point_id.text = station.id.toString()
+            itemView.item_point_latitude.text = station.latitude.toString()
+            itemView.item_point_longitude.text = station.longitude.toString()
+            itemView.item_point_name.text = station.nom
+            itemView.item_point_partition.text = station.partition.toString()
             bindPositionClick(station.id)
         }
 

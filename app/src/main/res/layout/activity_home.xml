@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_station"
+        tools:listitem="@layout/item_point"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/rv_arc" />
 
@@ -24,7 +24,7 @@
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:listitem="@layout/item_station"
+        tools:listitem="@layout/item_point"
         app:layout_constraintStart_toEndOf="@id/rv_point"
         app:layout_constraintEnd_toEndOf="parent" />
 

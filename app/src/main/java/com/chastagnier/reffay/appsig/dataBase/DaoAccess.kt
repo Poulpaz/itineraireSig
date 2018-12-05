@@ -12,6 +12,6 @@ interface DaoAccess {
     @Query("SELECT * FROM GEO_POINT")
     fun getGeoPoint() : Single<List<GEO_POINT>>
 
-    //@Query("SELECT * FROM GEO_ARC")
-    //fun getGeoArc() : Single<List<GEO_ARC>>
+    @Query("SELECT * FROM GEO_ARC")
+    fun getGeoArc() : Single<List<GEO_ARC>>
 }
