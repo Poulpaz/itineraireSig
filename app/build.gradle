@@ -51,7 +51,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
 
     // Timber
-    implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 
     // Rx
     implementation "io.reactivex.rxjava2:rxjava:$versions.rxjava"

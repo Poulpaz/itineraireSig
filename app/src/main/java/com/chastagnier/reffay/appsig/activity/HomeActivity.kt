@@ -66,18 +66,21 @@ class HomeActivity() : BaseActivity() {
                         {
                             Log.d("TESTT1", it.first.toString())
                             Log.d("TESTT2", it.second.toString())
-                            val graph = Graph(it.second, it.first)
-                            val dijkstra = Dijkstra(graph)
-                            dijkstra.execute(listPoint.first())
-                            val path = dijkstra.getPath(listPoint.last())
-
-                            path?.forEach {
-                                Log.d("TESTTPATH", it.toString())
-                            }
+                            calculDijkstra(it)
                         },
                         { Timber.e(it) }
                 )
 
+    }
+
+    private fun calculDijkstra(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
+        val graph = Graph(it.second, it.first)
+        val dijkstra = Dijkstra(graph)
+        val path = dijkstra.getResult(listPoint.get(28), listPoint.get(52))
+
+        path?.forEach {
+            Log.d("TESTTPATH", it.toString())
+        }
     }
 
     //création du menu

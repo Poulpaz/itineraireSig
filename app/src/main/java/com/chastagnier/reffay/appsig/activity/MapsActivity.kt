@@ -1,6 +1,6 @@
 package com.chastagnier.reffay.appsig.activity
 
-import android.support.v7.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import com.chastagnier.reffay.appsig.R
@@ -13,8 +13,8 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolylineOptions
 import org.kodein.di.generic.instance
-import java.lang.Float.parseFloat
 
 class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
@@ -23,7 +23,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_maps2)
+        setContentView(R.layout.activity_maps)
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
@@ -50,5 +50,15 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))
                     .title(point.nom))
         }
+
+        var lineOptions = PolylineOptions()
+        lineOptions.add(LatLng(listPoint.get(28).latitude.toDouble(), listPoint.get(28).longitude.toDouble()))
+        lineOptions.add(LatLng(listPoint.get(29).latitude.toDouble(), listPoint.get(29).longitude.toDouble()))
+        lineOptions.add(LatLng(listPoint.get(30).latitude.toDouble(), listPoint.get(30).longitude.toDouble()))
+
+        lineOptions.width(10.toFloat());
+        lineOptions.color(Color.RED);
+
+        mMap.addPolyline(lineOptions)
     }
 }
