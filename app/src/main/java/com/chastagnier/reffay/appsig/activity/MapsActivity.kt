@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
@@ -20,6 +21,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     val sigDatabase : SigDatabase by instance()
+    var listPath = mutableListOf<PolylineOptions>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,14 +36,41 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
         mMap = googleMap
         mMap.setMinZoomPreference(12.0f);
 
-        // Add a marker in Sydney and move the camera
         val bourgEnBresse = LatLng(46.202781, 5.219243)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(bourgEnBresse))
 
         sigDatabase.searchStationDAO().getGeoPoint().subscribe(
-                { addMarker(it) },
+                {
+                    Log.d("TESTDJ", it.toString())
+                    drawPath(it)
+                    addMarker(it) },
                 { Log.e("TESTT", it.toString()) }
         ).dispose()
+    }
+
+    private fun drawPath(listPoint: List<GEO_POINT>) {
+
+        var path = listPoint.first().partition
+        var lineOptions = PolylineOptions()
+        lineOptions.color(Color.RED)
+        lineOptions.width(10.toFloat());
+
+        listPoint.forEach{
+            if(path == it.partition){
+                lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
+            }
+            else{
+                path = it.partition
+                listPath.add(lineOptions)
+                lineOptions = PolylineOptions()
+                lineOptions.color(Color.RED)
+                lineOptions.width(10.toFloat());
+                lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
+            }
+        }
+
+        listPath.add(lineOptions)
+        Log.d("TESTPATH", listPath.toString())
     }
 
     private fun addMarker(listPoint: List<GEO_POINT>) {
@@ -51,14 +80,8 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     .title(point.nom))
         }
 
-        var lineOptions = PolylineOptions()
-        lineOptions.add(LatLng(listPoint.get(28).latitude.toDouble(), listPoint.get(28).longitude.toDouble()))
-        lineOptions.add(LatLng(listPoint.get(29).latitude.toDouble(), listPoint.get(29).longitude.toDouble()))
-        lineOptions.add(LatLng(listPoint.get(30).latitude.toDouble(), listPoint.get(30).longitude.toDouble()))
-
-        lineOptions.width(10.toFloat());
-        lineOptions.color(Color.RED);
-
-        mMap.addPolyline(lineOptions)
+        listPath.forEach {
+            mMap.addPolyline(it)
+        }
     }
 }

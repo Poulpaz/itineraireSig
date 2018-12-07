@@ -1,0 +1,136 @@
+package com.chastagnier.reffay.appsig.activity
+
+import android.content.Context
+import android.support.v7.app.AppCompatActivity
+import android.os.Bundle
+import android.util.AttributeSet
+import android.util.Log
+import android.view.View
+import android.widget.AdapterView
+import android.widget.Toast
+import com.chastagnier.reffay.appsig.R
+import com.chastagnier.reffay.appsig.adapter.ListCalculAdapter
+import com.chastagnier.reffay.appsig.adapter.ListPointAdapter
+import com.chastagnier.reffay.appsig.dataBase.SigDatabase
+import com.chastagnier.reffay.appsig.model.GEO_ARC
+import com.chastagnier.reffay.appsig.model.GEO_POINT
+import com.chastagnier.reffay.appsig.model.Graph
+import com.chastagnier.reffay.appsig.utils.Dijkstra
+import io.reactivex.Observable
+import io.reactivex.functions.BiFunction
+import kotlinx.android.synthetic.main.activity_calcul.*
+import org.kodein.di.generic.instance
+import timber.log.Timber
+import java.util.*
+
+class CalculActivity : BaseActivity(){
+
+    lateinit var listAdapterCalcul: ListCalculAdapter
+    var listPoint: List<GEO_POINT> = mutableListOf()
+    var listArc: List<GEO_ARC> = mutableListOf()
+    val sigDatabase: SigDatabase by instance()
+    lateinit var obsListPoint: Observable<List<GEO_POINT>>
+    lateinit var obsListArc: Observable<List<GEO_ARC>>
+    var idBus = 0
+    var idMethod = 0
+
+    var pathDijkstra1: LinkedList<GEO_POINT>? = null
+    var pathDijkstra2: LinkedList<GEO_POINT>? = null
+    var pathDijkstra3: LinkedList<GEO_POINT>? = null
+    var pathDijkstra4: LinkedList<GEO_POINT>? = null
+    var pathDijkstra5: LinkedList<GEO_POINT>? = null
+    var pathDijkstra6: LinkedList<GEO_POINT>? = null
+    var pathDijkstra7: LinkedList<GEO_POINT>? = null
+    var pathDijkstra21: LinkedList<GEO_POINT>? = null
+    var pathDijkstra0: LinkedList<GEO_POINT>? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_calcul)
+
+        listAdapterCalcul = ListCalculAdapter()
+        rv_calcul.adapter = listAdapterCalcul
+
+        sigDatabase.searchStationDAO().getGeoPoint().subscribe(
+                {
+                    listPoint = it
+                    obsListPoint = Observable.just(listPoint)
+                },
+                { Log.e("TESTT2", it.toString()) }
+        ).dispose()
+
+        sigDatabase.searchStationDAO().getGeoArc().subscribe(
+                {
+                    listArc = it
+                    obsListArc = Observable.just(listArc)
+                },
+                { Log.e("TESTT2", it.toString()) }
+        ).dispose()
+
+        Observable.combineLatest(obsListArc, obsListPoint, BiFunction<List<GEO_ARC>?, List<GEO_POINT>?, Pair<List<GEO_ARC>, List<GEO_POINT>>> { l1, l2 -> Pair(l1, l2) })
+                .subscribe(
+                        {
+                            calculDijkstra(it)
+                            setSpinnerListener()
+                        },
+                        { Timber.e(it) }
+                )
+
+
+    }
+
+    private fun setSpinnerListener() {
+        spinner_bus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, positon: Int, id: Long) {
+                idBus = positon
+                setList()
+            }
+        }
+
+        spinner_method.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, view: View?, positon: Int, id: Long) {
+                idMethod = positon
+                setList()
+            }
+        }
+    }
+
+    private fun setList(){
+        val list = when(idBus){
+            0 -> pathDijkstra1
+            1 -> pathDijkstra2
+            2 -> pathDijkstra3
+            3 -> pathDijkstra4
+            4 -> pathDijkstra5
+            5 -> pathDijkstra6
+            6 -> pathDijkstra7
+            7 -> pathDijkstra21
+            8 -> pathDijkstra0
+            else -> mutableListOf<GEO_POINT>()
+        }
+        listAdapterCalcul.submitList(list)
+        listAdapterCalcul.notifyDataSetChanged()
+    }
+
+    private fun calculDijkstra(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
+        val graph = Graph(it.second, it.first)
+        val dijkstra = Dijkstra(graph)
+        pathDijkstra1 = dijkstra.getResult(listPoint.get(0), listPoint.get(27))
+        pathDijkstra2 = dijkstra.getResult(listPoint.get(28), listPoint.get(52))
+        pathDijkstra3 = dijkstra.getResult(listPoint.get(53), listPoint.get(82))
+        pathDijkstra4 = dijkstra.getResult(listPoint.get(83), listPoint.get(110))
+        pathDijkstra5 = dijkstra.getResult(listPoint.get(111), listPoint.get(154))
+        pathDijkstra6 = dijkstra.getResult(listPoint.get(155), listPoint.get(185))
+        pathDijkstra7 = dijkstra.getResult(listPoint.get(186), listPoint.get(210))
+        pathDijkstra21 = dijkstra.getResult(listPoint.get(211), listPoint.get(218))
+        pathDijkstra0 = dijkstra.getResult(listPoint.get(219), listPoint.get(224))
+    }
+}

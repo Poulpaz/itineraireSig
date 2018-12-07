@@ -14,6 +14,7 @@ import com.chastagnier.reffay.appsig.adapter.ListArcAdapter
 import com.chastagnier.reffay.appsig.model.GEO_ARC
 import com.chastagnier.reffay.appsig.model.Graph
 import com.chastagnier.reffay.appsig.utils.Dijkstra
+import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import org.kodein.di.generic.instance
@@ -61,26 +62,11 @@ class HomeActivity() : BaseActivity() {
                 { Log.e("TESTT2", it.toString()) }
         ).dispose()
 
-        Observable.combineLatest(obsListArc, obsListPoint, BiFunction<List<GEO_ARC>?, List<GEO_POINT>?, Pair<List<GEO_ARC>, List<GEO_POINT>>> { l1, l2 -> Pair(l1, l2) })
-                .subscribe(
-                        {
-                            Log.d("TESTT1", it.first.toString())
-                            Log.d("TESTT2", it.second.toString())
-                            calculDijkstra(it)
-                        },
-                        { Timber.e(it) }
-                )
-
-    }
-
-    private fun calculDijkstra(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
-        val graph = Graph(it.second, it.first)
-        val dijkstra = Dijkstra(graph)
-        val path = dijkstra.getResult(listPoint.get(28), listPoint.get(52))
-
-        path?.forEach {
-            Log.d("TESTTPATH", it.toString())
+        b_calcul.setOnClickListener {
+            intent = Intent(this@HomeActivity, CalculActivity::class.java)
+            startActivity(intent)
         }
+
     }
 
     //création du menu

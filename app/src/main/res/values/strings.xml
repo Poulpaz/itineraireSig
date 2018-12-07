@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">AppSIG</string>
     <string name="title_activity_maps">Map</string>
+
+    <string-array name="bus_array">
+        <item>Bus 1</item>
+        <item>Bus 2</item>
+        <item>Bus 3</item>
+        <item>Bus 4</item>
+        <item>Bus 5</item>
+        <item>Bus 6</item>
+        <item>Bus 7</item>
+        <item>Bus 21</item>
+        <item>Bus 0</item>
+    </string-array>
+
+    <string-array name="method_array">
+        <item>Dijkstra</item>
+    </string-array>
 </resources>

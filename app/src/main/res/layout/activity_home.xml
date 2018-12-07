@@ -6,26 +6,63 @@
     android:layout_height="match_parent"
     tools:context=".activity.HomeActivity">
 
+    <TextView
+        android:id="@+id/tv_arcs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Arcs"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toStartOf="@id/tv_points"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_points"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="Sommets"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_arcs"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_point"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/item_point"
+        app:layout_constraintTop_toBottomOf="@id/tv_arcs"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/rv_arc" />
+        app:layout_constraintEnd_toStartOf="@id/rv_arc"
+        app:layout_constraintBottom_toTopOf="@id/b_calcul"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_arc"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:orientation="vertical"
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/item_point"
+        app:layout_constraintTop_toBottomOf="@id/tv_points"
         app:layout_constraintStart_toEndOf="@id/rv_point"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/b_calcul"/>
+
+    <Button
+        android:id="@+id/b_calcul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Calcul"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
