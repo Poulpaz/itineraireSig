@@ -21,6 +21,13 @@ class Dijkstra(graph: Graph) {
         this.listArc = graph.listArc
     }
 
+    fun reset(){
+        settledNodes = HashSet()
+        unSettledNodes = HashSet()
+        predecessors = HashMap()
+        distance = HashMap()
+    }
+
     fun getResult(source: GEO_POINT, target: GEO_POINT): LinkedList<GEO_POINT>? {
         execute(source)
         val path = LinkedList<GEO_POINT>()

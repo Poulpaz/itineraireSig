@@ -34,6 +34,8 @@ class CalculActivity : BaseActivity(){
     var idBus = 0
     var idMethod = 0
 
+    var actualList : LinkedList<GEO_POINT>? = null
+
     var pathDijkstra1: LinkedList<GEO_POINT>? = null
     var pathDijkstra2: LinkedList<GEO_POINT>? = null
     var pathDijkstra3: LinkedList<GEO_POINT>? = null
@@ -104,7 +106,7 @@ class CalculActivity : BaseActivity(){
     }
 
     private fun setList(){
-        val list = when(idBus){
+        actualList = when(idBus){
             0 -> pathDijkstra1
             1 -> pathDijkstra2
             2 -> pathDijkstra3
@@ -114,9 +116,9 @@ class CalculActivity : BaseActivity(){
             6 -> pathDijkstra7
             7 -> pathDijkstra21
             8 -> pathDijkstra0
-            else -> mutableListOf<GEO_POINT>()
+            else -> null
         }
-        listAdapterCalcul.submitList(list)
+        listAdapterCalcul.submitList(actualList)
         listAdapterCalcul.notifyDataSetChanged()
     }
 
@@ -124,13 +126,21 @@ class CalculActivity : BaseActivity(){
         val graph = Graph(it.second, it.first)
         val dijkstra = Dijkstra(graph)
         pathDijkstra1 = dijkstra.getResult(listPoint.get(0), listPoint.get(27))
+        dijkstra.reset()
         pathDijkstra2 = dijkstra.getResult(listPoint.get(28), listPoint.get(52))
+        dijkstra.reset()
         pathDijkstra3 = dijkstra.getResult(listPoint.get(53), listPoint.get(82))
+        dijkstra.reset()
         pathDijkstra4 = dijkstra.getResult(listPoint.get(83), listPoint.get(110))
+        dijkstra.reset()
         pathDijkstra5 = dijkstra.getResult(listPoint.get(111), listPoint.get(154))
+        dijkstra.reset()
         pathDijkstra6 = dijkstra.getResult(listPoint.get(155), listPoint.get(185))
+        dijkstra.reset()
         pathDijkstra7 = dijkstra.getResult(listPoint.get(186), listPoint.get(210))
+        dijkstra.reset()
         pathDijkstra21 = dijkstra.getResult(listPoint.get(211), listPoint.get(218))
+        dijkstra.reset()
         pathDijkstra0 = dijkstra.getResult(listPoint.get(219), listPoint.get(224))
     }
 }
