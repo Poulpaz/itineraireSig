@@ -13,4 +13,4 @@ data class GEO_POINT(
         @ColumnInfo(name = "GEO_POI_LONGITUDE") var longitude: Float,
         @ColumnInfo(name = "GEO_POI_NOM") var nom: String,
         @ColumnInfo(name = "GEO_POI_PARTITION") var partition: Int
-)
+) : Serializable

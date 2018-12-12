@@ -22,6 +22,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     val sigDatabase : SigDatabase by instance()
     var listPath = mutableListOf<PolylineOptions>()
+    lateinit var listFromCalcul : List<GEO_POINT>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +31,8 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        listFromCalcul = intent.getSerializableExtra("listPoint") as List<GEO_POINT>
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -55,17 +58,23 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
         lineOptions.color(Color.RED)
         lineOptions.width(10.toFloat());
 
-        listPoint.forEach{
-            if(path == it.partition){
+        if(listFromCalcul != null){
+            listFromCalcul.forEach {
                 lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
             }
-            else{
-                path = it.partition
-                listPath.add(lineOptions)
-                lineOptions = PolylineOptions()
-                lineOptions.color(Color.RED)
-                lineOptions.width(10.toFloat());
-                lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
+        }else {
+
+            listPoint.forEach {
+                if (path == it.partition) {
+                    lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
+                } else {
+                    path = it.partition
+                    listPath.add(lineOptions)
+                    lineOptions = PolylineOptions()
+                    lineOptions.color(Color.RED)
+                    lineOptions.width(10.toFloat());
+                    lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
+                }
             }
         }
 
@@ -74,10 +83,19 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     }
 
     private fun addMarker(listPoint: List<GEO_POINT>) {
-        for (point in listPoint) {
-            mMap.addMarker(MarkerOptions()
-                    .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))
-                    .title(point.nom))
+
+        if(listFromCalcul != null){
+            for (point in listFromCalcul) {
+                mMap.addMarker(MarkerOptions()
+                        .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))
+                        .title(point.nom))
+            }
+        }else {
+            for (point in listPoint) {
+                mMap.addMarker(MarkerOptions()
+                        .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))
+                        .title(point.nom))
+            }
         }
 
         listPath.forEach {

@@ -3,6 +3,7 @@ package com.chastagnier.reffay.appsig.model
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "GEO_ARC")
 data class GEO_ARC(
@@ -13,4 +14,4 @@ data class GEO_ARC(
         @ColumnInfo(name = "GEO_ARC_TEMPS") var temps: Float,
         @ColumnInfo(name = "GEO_ARC_DISTANCE") var distance: Float,
         @ColumnInfo(name = "GEO_ARC_SENS") var sens: Int
-)
+) : Serializable

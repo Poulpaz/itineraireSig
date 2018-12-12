@@ -1,6 +1,7 @@
 package com.chastagnier.reffay.appsig.activity
 
 import android.content.Context
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.AttributeSet
@@ -8,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Toast
+import breadthFirstTraversal
 import com.chastagnier.reffay.appsig.R
 import com.chastagnier.reffay.appsig.adapter.ListCalculAdapter
 import com.chastagnier.reffay.appsig.adapter.ListPointAdapter
@@ -19,6 +21,7 @@ import com.chastagnier.reffay.appsig.utils.Dijkstra
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.activity_calcul.*
+import kotlinx.android.synthetic.main.activity_home.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.util.*
@@ -73,12 +76,23 @@ class CalculActivity : BaseActivity(){
                 .subscribe(
                         {
                             calculDijkstra(it)
+                            //calculParcoursEnLargeur(it)
                             setSpinnerListener()
                         },
                         { Timber.e(it) }
                 )
 
+        b_map.setOnClickListener {
+            val intent = Intent(this@CalculActivity, MapsActivity::class.java)
+            intent.putExtra("listPoint", actualList)
+            startActivity(intent)
+        }
 
+
+    }
+
+    private fun calculParcoursEnLargeur(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
+        Log.d("PEL" , breadthFirstTraversal(Graph(it.second.filter { it.id <28 }, it.first), it.second.get(0)))
     }
 
     private fun setSpinnerListener() {
