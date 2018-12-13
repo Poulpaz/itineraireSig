@@ -1,32 +1,26 @@
 package com.chastagnier.reffay.appsig.activity
 
-import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
-import android.widget.Toast
-import breadthFirstTraversal
 import com.chastagnier.reffay.appsig.R
 import com.chastagnier.reffay.appsig.adapter.ListCalculAdapter
-import com.chastagnier.reffay.appsig.adapter.ListPointAdapter
 import com.chastagnier.reffay.appsig.dataBase.SigDatabase
 import com.chastagnier.reffay.appsig.model.GEO_ARC
 import com.chastagnier.reffay.appsig.model.GEO_POINT
 import com.chastagnier.reffay.appsig.model.Graph
 import com.chastagnier.reffay.appsig.utils.Dijkstra
+import com.chastagnier.reffay.appsig.utils.ParcoursEnLargeur
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import kotlinx.android.synthetic.main.activity_calcul.*
-import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_calcul_bus.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.util.*
 
-class CalculActivity : BaseActivity(){
+class CalculPointsActivity : BaseActivity(){
 
     lateinit var listAdapterCalcul: ListCalculAdapter
     var listPoint: List<GEO_POINT> = mutableListOf()
@@ -36,6 +30,7 @@ class CalculActivity : BaseActivity(){
     lateinit var obsListArc: Observable<List<GEO_ARC>>
     var idBus = 0
     var idMethod = 0
+    lateinit var graph : Graph
 
     var actualList : LinkedList<GEO_POINT>? = null
 
@@ -51,7 +46,7 @@ class CalculActivity : BaseActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_calcul)
+        setContentView(R.layout.activity_calcul_points)
 
         listAdapterCalcul = ListCalculAdapter()
         rv_calcul.adapter = listAdapterCalcul
@@ -75,24 +70,24 @@ class CalculActivity : BaseActivity(){
         Observable.combineLatest(obsListArc, obsListPoint, BiFunction<List<GEO_ARC>?, List<GEO_POINT>?, Pair<List<GEO_ARC>, List<GEO_POINT>>> { l1, l2 -> Pair(l1, l2) })
                 .subscribe(
                         {
-                            calculDijkstra(it)
-                            //calculParcoursEnLargeur(it)
+                            graph = Graph(it.second, it.first)
+                            calculParcoursEnLargeur(it)
                             setSpinnerListener()
                         },
                         { Timber.e(it) }
                 )
 
         b_map.setOnClickListener {
-            val intent = Intent(this@CalculActivity, MapsActivity::class.java)
+            val intent = Intent(this@CalculPointsActivity, MapsActivity::class.java)
             intent.putExtra("listPoint", actualList)
             startActivity(intent)
         }
 
-
     }
 
     private fun calculParcoursEnLargeur(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
-        Log.d("PEL" , breadthFirstTraversal(Graph(it.second.filter { it.id <28 }, it.first), it.second.get(0)))
+        val graph = Graph(it.second, it.first)
+        val PEL = ParcoursEnLargeur(graph)
     }
 
     private fun setSpinnerListener() {
@@ -137,7 +132,6 @@ class CalculActivity : BaseActivity(){
     }
 
     private fun calculDijkstra(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
-        val graph = Graph(it.second, it.first)
         val dijkstra = Dijkstra(graph)
         pathDijkstra1 = dijkstra.getResult(listPoint.get(0), listPoint.get(27))
         dijkstra.reset()

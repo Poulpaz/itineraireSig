@@ -22,7 +22,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private lateinit var mMap: GoogleMap
     val sigDatabase : SigDatabase by instance()
     var listPath = mutableListOf<PolylineOptions>()
-    lateinit var listFromCalcul : List<GEO_POINT>
+    var listFromCalcul : List<GEO_POINT> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +58,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
         lineOptions.color(Color.RED)
         lineOptions.width(10.toFloat());
 
-        if(listFromCalcul != null){
+        if(listFromCalcul.size > 0){
             listFromCalcul.forEach {
                 lineOptions.add(LatLng(it.latitude.toDouble(), it.longitude.toDouble()))
             }
@@ -84,7 +84,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     private fun addMarker(listPoint: List<GEO_POINT>) {
 
-        if(listFromCalcul != null){
+        if(listFromCalcul.size > 0){
             for (point in listFromCalcul) {
                 mMap.addMarker(MarkerOptions()
                         .position(LatLng(point.latitude!!.toDouble(), point.longitude!!.toDouble()))

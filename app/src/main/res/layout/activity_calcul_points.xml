@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.CalculActivity">
+    tools:context=".activity.CalculBusActivity">
 
     <Spinner
-        android:id="@+id/spinner_bus"
+        android:id="@+id/spinner_points"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
@@ -19,7 +19,7 @@
         android:layout_marginEnd="8dp" />
 
     <Spinner
-        android:id="@+id/spinner_method"
+        android:id="@+id/spinner_method_points"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/btn_dropdown"
@@ -31,7 +31,7 @@
         android:layout_marginEnd="8dp" />
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_calcul"
+        android:id="@+id/rv_calcul_points"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -44,7 +44,7 @@
         app:layout_constraintBottom_toTopOf="@id/b_map"/>
 
     <Button
-        android:id="@+id/b_map"
+        android:id="@+id/b_map_points"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Voir la carte"

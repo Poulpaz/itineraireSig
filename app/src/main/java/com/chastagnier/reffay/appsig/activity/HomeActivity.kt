@@ -12,15 +12,8 @@ import android.view.Menu
 import android.view.MenuItem
 import com.chastagnier.reffay.appsig.adapter.ListArcAdapter
 import com.chastagnier.reffay.appsig.model.GEO_ARC
-import com.chastagnier.reffay.appsig.model.Graph
-import com.chastagnier.reffay.appsig.utils.Dijkstra
-import com.jakewharton.rxbinding2.view.clicks
 import io.reactivex.Observable
-import io.reactivex.functions.BiFunction
 import org.kodein.di.generic.instance
-import timber.log.Timber
-
-
 
 
 class HomeActivity() : BaseActivity() {
@@ -62,8 +55,13 @@ class HomeActivity() : BaseActivity() {
                 { Log.e("TESTT2", it.toString()) }
         ).dispose()
 
-        b_calcul.setOnClickListener {
-            intent = Intent(this@HomeActivity, CalculActivity::class.java)
+        b_calcul_bus.setOnClickListener {
+            intent = Intent(this@HomeActivity, CalculBusActivity::class.java)
+            startActivity(intent)
+        }
+
+        b_calcul_points.setOnClickListener {
+            intent = Intent(this@HomeActivity, CalculPointsActivity::class.java)
             startActivity(intent)
         }
 
@@ -82,7 +80,9 @@ class HomeActivity() : BaseActivity() {
         var intent: Intent
         when (item.itemId) {
             R.id.action_map -> {
+                val list = ArrayList<GEO_POINT>()
                 intent = Intent(this@HomeActivity, MapsActivity::class.java)
+                intent.putExtra("listPoint", list)
                 startActivity(intent)
                 return true
             }
