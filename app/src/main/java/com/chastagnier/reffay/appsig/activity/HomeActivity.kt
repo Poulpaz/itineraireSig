@@ -1,5 +1,6 @@
 package com.chastagnier.reffay.appsig.activity
 
+import android.Manifest
 import android.os.Bundle
 import android.util.Log
 import com.chastagnier.reffay.appsig.R
@@ -8,6 +9,10 @@ import com.chastagnier.reffay.appsig.dataBase.SigDatabase
 import com.chastagnier.reffay.appsig.model.GEO_POINT
 import kotlinx.android.synthetic.main.activity_home.*
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import com.chastagnier.reffay.appsig.adapter.ListArcAdapter
@@ -26,10 +31,13 @@ class HomeActivity() : BaseActivity() {
     lateinit var obsListPoint: Observable<List<GEO_POINT>>
     lateinit var obsListArc: Observable<List<GEO_ARC>>
 
+    private val RECORD_REQUEST_CODE = 101
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
+        setupPermissions()
         //sigDatabase = RoomAsset.databaseBuilder(this, SigDatabase::class.java, "lp_iem_sig.db").addMigrations(MIGRATION_1_2).fallbackToDestructiveMigration().allowMainThreadQueries().build()
 
         listAdapterPoint = ListPointAdapter()
@@ -88,5 +96,36 @@ class HomeActivity() : BaseActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun setupPermissions() {
+        val permission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            Log.i("tag", "Permission to record denied")
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                val builder = AlertDialog.Builder(this)
+                builder.setMessage("Permission to access the external storage is required for this app to write on your storage.")
+                        .setTitle("Permission required")
+
+                builder.setPositiveButton("OK"
+                ) { dialog, id ->
+                    Log.i("tag", "Clicked")
+                    makeRequest()
+                }
+
+                val dialog = builder.create()
+                dialog.show()
+            } else {
+                makeRequest()
+            }
+        }
+    }
+
+    private fun makeRequest() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), RECORD_REQUEST_CODE)
     }
 }

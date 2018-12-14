@@ -1,10 +1,17 @@
 package com.chastagnier.reffay.appsig.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Environment
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Toast
 import com.chastagnier.reffay.appsig.R
 import com.chastagnier.reffay.appsig.adapter.ListCalculAdapter
 import com.chastagnier.reffay.appsig.dataBase.SigDatabase
@@ -12,12 +19,12 @@ import com.chastagnier.reffay.appsig.model.GEO_ARC
 import com.chastagnier.reffay.appsig.model.GEO_POINT
 import com.chastagnier.reffay.appsig.model.Graph
 import com.chastagnier.reffay.appsig.utils.Dijkstra
-import com.chastagnier.reffay.appsig.utils.ParcoursEnLargeur
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.activity_calcul_bus.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
+import java.io.File
 import java.util.*
 
 class CalculBusActivity : BaseActivity(){
@@ -30,6 +37,7 @@ class CalculBusActivity : BaseActivity(){
     lateinit var obsListArc: Observable<List<GEO_ARC>>
     var idBus = 0
     var idMethod = 0
+    val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 
     var actualList : LinkedList<GEO_POINT>? = null
 
@@ -42,6 +50,9 @@ class CalculBusActivity : BaseActivity(){
     var pathDijkstra7: LinkedList<GEO_POINT>? = null
     var pathDijkstra21: LinkedList<GEO_POINT>? = null
     var pathDijkstra0: LinkedList<GEO_POINT>? = null
+
+    var chaineXml : String = ""
+    var xmlFile = "carlosTristanBusStopBenBr.kml"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,12 +93,16 @@ class CalculBusActivity : BaseActivity(){
             startActivity(intent)
         }
 
+        b_export.setOnClickListener{
+            exportKml(actualList)
+        }
+
 
     }
 
     private fun calculParcoursEnLargeur(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
-        val graph = Graph(it.second, it.first)
-        val PEL = ParcoursEnLargeur(graph)
+        //val graph = Graph(it.second, it.first)
+        //val PEL = ParcoursEnLargeur(graph)
     }
 
     private fun setSpinnerListener() {
@@ -151,5 +166,28 @@ class CalculBusActivity : BaseActivity(){
         pathDijkstra21 = dijkstra.getResult(listPoint.get(211), listPoint.get(218))
         dijkstra.reset()
         pathDijkstra0 = dijkstra.getResult(listPoint.get(219), listPoint.get(224))
+    }
+
+    private fun exportKml(list: LinkedList<GEO_POINT>?) {
+        chaineXml += "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n"
+
+        list?.map {
+            chaineXml += getString(it)
+        }
+
+        chaineXml += "</kml>"
+
+        File(path, xmlFile).writeText(chaineXml)
+        Toast.makeText(this, "Export du KML effectué", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun getString(point : GEO_POINT) : String{
+        return "<Placemark>\n" +
+                "<name>" + point.nom + "</name>" + "\n" +
+                "<Point>\n" +
+                "<coordinates>" + point.longitude + "," + point.latitude + "</coordinates>\n" +
+                "</Point>\n" +
+                "</Placemark>\n"
     }
 }
