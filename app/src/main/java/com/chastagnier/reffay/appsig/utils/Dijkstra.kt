@@ -72,7 +72,7 @@ class Dijkstra(graph: Graph) {
     private fun getDistance(node: GEO_POINT, target: GEO_POINT): Float {
         for (edge in listArc) {
             if (edge.deb == node.id && edge.fin == target.id) {
-                return edge.temps
+                return edge.distance
             }
         }
         throw RuntimeException("Should not happen")

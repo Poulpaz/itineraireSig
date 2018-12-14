@@ -68,7 +68,7 @@
         android:id="@+id/b_calcul_bus"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Calcul Bus"
+        android:text="Calcul Distance"
         android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@id/b_calcul_points"

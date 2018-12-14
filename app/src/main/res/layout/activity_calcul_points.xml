@@ -30,6 +30,15 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp" />
 
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/spinner_points_fin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_calcul_points"
         android:layout_width="match_parent"
@@ -38,20 +47,27 @@
         android:overScrollMode="never"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"
         tools:listitem="@layout/item_point"
-        app:layout_constraintTop_toBottomOf="@id/spinner_points_fin"
+        app:layout_constraintTop_toBottomOf="@id/textView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/b_map_points"/>
 
     <Button
         android:id="@+id/b_map_points"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Voir la carte"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/b_export_points" />
+
+    <Button
+        android:id="@+id/b_export_points"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Exporter en kml"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/b_map_points"
         app:layout_constraintEnd_toEndOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
