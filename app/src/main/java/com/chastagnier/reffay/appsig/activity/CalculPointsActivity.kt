@@ -12,13 +12,14 @@ import com.chastagnier.reffay.appsig.model.GEO_ARC
 import com.chastagnier.reffay.appsig.model.GEO_POINT
 import com.chastagnier.reffay.appsig.model.Graph
 import com.chastagnier.reffay.appsig.utils.Dijkstra
-import com.chastagnier.reffay.appsig.utils.ParcoursEnLargeur
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
-import kotlinx.android.synthetic.main.activity_calcul_bus.*
 import org.kodein.di.generic.instance
 import timber.log.Timber
 import java.util.*
+import android.widget.ArrayAdapter
+import kotlinx.android.synthetic.main.activity_calcul_points.*
+
 
 class CalculPointsActivity : BaseActivity(){
 
@@ -28,9 +29,10 @@ class CalculPointsActivity : BaseActivity(){
     val sigDatabase: SigDatabase by instance()
     lateinit var obsListPoint: Observable<List<GEO_POINT>>
     lateinit var obsListArc: Observable<List<GEO_ARC>>
-    var idBus = 0
-    var idMethod = 0
+    var idDeb = 0
+    var idFin = 0
     lateinit var graph : Graph
+    lateinit var dijkstra : Dijkstra
 
     var actualList : LinkedList<GEO_POINT>? = null
 
@@ -49,7 +51,7 @@ class CalculPointsActivity : BaseActivity(){
         setContentView(R.layout.activity_calcul_points)
 
         listAdapterCalcul = ListCalculAdapter()
-        rv_calcul.adapter = listAdapterCalcul
+        rv_calcul_points.adapter = listAdapterCalcul
 
         sigDatabase.searchStationDAO().getGeoPoint().subscribe(
                 {
@@ -71,13 +73,13 @@ class CalculPointsActivity : BaseActivity(){
                 .subscribe(
                         {
                             graph = Graph(it.second, it.first)
-                            calculParcoursEnLargeur(it)
+                            dijkstra = Dijkstra(graph)
                             setSpinnerListener()
                         },
                         { Timber.e(it) }
                 )
 
-        b_map.setOnClickListener {
+        b_map_points.setOnClickListener {
             val intent = Intent(this@CalculPointsActivity, MapsActivity::class.java)
             intent.putExtra("listPoint", actualList)
             startActivity(intent)
@@ -87,68 +89,44 @@ class CalculPointsActivity : BaseActivity(){
 
     private fun calculParcoursEnLargeur(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
         val graph = Graph(it.second, it.first)
-        val PEL = ParcoursEnLargeur(graph)
+        val PEL = PEL(graph)
     }
 
     private fun setSpinnerListener() {
-        spinner_bus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+
+        val adp1 = ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, listPoint.map { it.nom })
+        adp1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner_points_fin.adapter = adp1
+        spinner_points_deb.setAdapter(adp1)
+
+        spinner_points_deb.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
 
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, view: View?, positon: Int, id: Long) {
-                idBus = positon
-                setList()
+                idDeb = positon
+                calculDijkstra()
             }
         }
 
-        spinner_method.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinner_points_fin.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
 
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, view: View?, positon: Int, id: Long) {
-                idMethod = positon
-                setList()
+                idFin = positon
+                calculDijkstra()
             }
         }
     }
 
-    private fun setList(){
-        actualList = when(idBus){
-            0 -> pathDijkstra1
-            1 -> pathDijkstra2
-            2 -> pathDijkstra3
-            3 -> pathDijkstra4
-            4 -> pathDijkstra5
-            5 -> pathDijkstra6
-            6 -> pathDijkstra7
-            7 -> pathDijkstra21
-            8 -> pathDijkstra0
-            else -> null
-        }
+    private fun calculDijkstra() {
+        dijkstra.reset()
+        actualList = dijkstra.getResult(listPoint.get(idDeb), listPoint.get(idFin))
         listAdapterCalcul.submitList(actualList)
         listAdapterCalcul.notifyDataSetChanged()
-    }
-
-    private fun calculDijkstra(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
-        val dijkstra = Dijkstra(graph)
-        pathDijkstra1 = dijkstra.getResult(listPoint.get(0), listPoint.get(27))
-        dijkstra.reset()
-        pathDijkstra2 = dijkstra.getResult(listPoint.get(28), listPoint.get(52))
-        dijkstra.reset()
-        pathDijkstra3 = dijkstra.getResult(listPoint.get(53), listPoint.get(82))
-        dijkstra.reset()
-        pathDijkstra4 = dijkstra.getResult(listPoint.get(83), listPoint.get(110))
-        dijkstra.reset()
-        pathDijkstra5 = dijkstra.getResult(listPoint.get(111), listPoint.get(154))
-        dijkstra.reset()
-        pathDijkstra6 = dijkstra.getResult(listPoint.get(155), listPoint.get(185))
-        dijkstra.reset()
-        pathDijkstra7 = dijkstra.getResult(listPoint.get(186), listPoint.get(210))
-        dijkstra.reset()
-        pathDijkstra21 = dijkstra.getResult(listPoint.get(211), listPoint.get(218))
-        dijkstra.reset()
-        pathDijkstra0 = dijkstra.getResult(listPoint.get(219), listPoint.get(224))
     }
 }

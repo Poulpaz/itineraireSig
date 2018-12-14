@@ -12,7 +12,6 @@ import com.chastagnier.reffay.appsig.model.GEO_ARC
 import com.chastagnier.reffay.appsig.model.GEO_POINT
 import com.chastagnier.reffay.appsig.model.Graph
 import com.chastagnier.reffay.appsig.utils.Dijkstra
-import com.chastagnier.reffay.appsig.utils.ParcoursEnLargeur
 import io.reactivex.Observable
 import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.activity_calcul_bus.*
@@ -87,7 +86,8 @@ class CalculBusActivity : BaseActivity(){
 
     private fun calculParcoursEnLargeur(it: Pair<List<GEO_ARC>, List<GEO_POINT>>) {
         val graph = Graph(it.second, it.first)
-        val PEL = ParcoursEnLargeur(graph)
+        val PEL = PEL(graph)
+        PEL.execute(it.second.first())
     }
 
     private fun setSpinnerListener() {
